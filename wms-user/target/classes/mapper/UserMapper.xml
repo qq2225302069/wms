@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wms.mapper.UserMapper">
+    <resultMap type="com.wms.user.service.bean.UserBean" id="UserMap">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="passwordSalt" property="password_salt"/>
+        <result column="creator" property="creator"/>
+        <result column="createPerson" property="create_person"/>
+        <result column="createTime" property="create_time"/>
+        <result column="editor" property="editor"/>
+        <result column="modifyPerson" property="modify_person"/>
+        <result column="modifyTime" property="modify_time"/>
+    </resultMap>
+
+    <!--查詢所有角色-->
+    <select id="list"
+            resultMap="UserMap">
+       select * from wms_user
+    </select>
+
+    <!--添加的ID-->
+    <select id="listMax"
+            resultType="java.lang.String">
+        select id from wms_user GROUP BY id desc LIMIT 1
+    </select>
+    <!--查詢所有角色-->
+    <select id="getById"
+            resultMap="UserMap">
+       select * from wms_user where  id = #{id}
+    </select>
+    <!--添加角色-->
+    <insert id="save" parameterType="com.wms.user.service.bean.UserBean">
+       insert into wms_user (
+       id,
+       username,
+       password,
+       password_salt,
+      creator,
+      create_person,
+      create_time,
+      editor,
+      modify_person,
+      modify_time
+       ) values (
+       #{id},
+       #{username},
+       #{password},
+       #{passwordSalt},
+       #{creator},
+       #{createPerson},
+       #{createTime},
+       #{editor},
+       #{modifyPerson},
+       #{modifyTime}
+       )
+    </insert>
+    <!--修改-->
+    <update id="update" parameterType="com.wms.user.service.bean.UserBean">
+       update wms_user set
+       username = #{username},
+       password = #{password},
+       password_salt = #{passwordSalt},
+       editor = #{editor},
+       modify_person =#{modifyPerson},
+       modify_time = #{modifyTime}
+       where
+       id = #{id}
+    </update>
+    <!--刪除-->
+    <delete id="delete" parameterType="com.wms.user.service.bean.UserBean">
+      delete from wms_user where id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wms.mapper.AucctMapper">
+    <resultMap type="com.wms.vo.User" id="UserMap">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="passwordSalt" property="password_salt"/>
+    </resultMap>
+
+    <resultMap type="com.wms.vo.Permission" id="PermissionMap">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="creator" property="creator"/>
+        <result column="createPerson" property="create_person"/>
+        <result column="createTime" property="create_time"/>
+        <result column="editor" property="editor"/>
+        <result column="modifyPerson" property="modify_person"/>
+        <result column="modifyTime" property="modify_time"/>
+    </resultMap>
+
+    <resultMap type="com.wms.vo.Role" id="RoleMap">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="creator" property="creator"/>
+        <result column="createPerson" property="create_person"/>
+        <result column="createTime" property="create_time"/>
+        <result column="editor" property="editor"/>
+        <result column="modifyPerson" property="modify_person"/>
+        <result column="modifyTime" property="modify_time"/>
+    </resultMap>
+    <!--根据用户名查密码-->
+    <select id="getPassWordByUserName" parameterType="java.lang.String"
+            resultType="java.lang.String">
+          select password from wms_user where username=#{value}
+    </select>
+    <select id="getUserWordByUserName"  parameterType="java.lang.String" resultMap="UserMap">
+          select * from wms_user where username=#{value}
+    </select>
+    <!--根据用户名查所属角色-->
+    <select id="getRolesByUsername" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT
+            NAME
+        FROM
+            wms_role
+        WHERE
+            id IN (
+                SELECT
+                    role_id
+                FROM
+                    wms_user_role
+                WHERE
+                    user_id = (
+                        SELECT
+                            id
+                        FROM
+                            wms_user
+                        WHERE
+                            username = #{username}
+                    )
+            )
+    </select>
+
+    <!--根据用户查所属角色-->
+    <select id="getRolesByUserId" parameterType="java.lang.String"
+            resultMap="RoleMap">
+        SELECT
+            *
+        FROM
+            wms_role
+        WHERE
+            id IN (
+                SELECT
+                    role_id
+                FROM
+                    wms_user_role
+                WHERE
+                    user_id = (
+                        SELECT
+                            id
+                        FROM
+                            wms_user
+                        WHERE
+                            id = #{userId}
+                    )
+            )
+    </select>
+
+    <!--根据用户查所属权限-->
+    <select id="getPermissionsByUserId" parameterType="java.lang.String"
+            resultMap="PermissionMap">
+        SELECT
+            *
+        FROM
+            wms_permission
+        WHERE
+            id IN (
+                SELECT
+                    permission_id
+                FROM
+                    wms_role_permission
+                WHERE
+                    role_id IN (
+                        SELECT
+                            role_id
+                        FROM
+                            wms_user_role
+                        WHERE
+                            user_id = (
+                                SELECT
+                                    id
+                                FROM
+                                    wms_user
+                                WHERE
+                                    id = #{userId}
+                            )
+                    )
+            )
+    </select>
+
+    <!--根据用户名查所属权限-->
+    <select id="getPermissionsByUsername" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT
+            description
+        FROM
+            wms_permission
+        WHERE
+            id IN (
+                SELECT
+                    permission_id
+                FROM
+                    wms_role_permission
+                WHERE
+                    role_id IN (
+                        SELECT
+                            role_id
+                        FROM
+                            wms_user_role
+                        WHERE
+                            user_id = (
+                                SELECT
+                                    id
+                                FROM
+                                    wms_user
+                                WHERE
+                                    username = #{username}
+                            )
+                    )
+            )
+    </select>
+</mapper>

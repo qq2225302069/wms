@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wms.mapper.RoleMapper">
+    <resultMap type="com.wms.user.service.bean.RoleBean" id="RoleMap">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="creator" property="creator"/>
+        <result column="createPerson" property="create_person"/>
+        <result column="createTime" property="create_time"/>
+        <result column="editor" property="editor"/>
+        <result column="modifyPerson" property="modify_person"/>
+        <result column="modifyTime" property="modify_time"/>
+    </resultMap>
+
+    <!--查詢所有角色-->
+    <select id="list"
+            resultMap="RoleMap">
+       select * from wms_role
+    </select>
+    <select id="getRoleByUserId"
+            resultMap="RoleMap">
+           SELECT
+            wr.*
+            FROM
+            wms_role wr
+            LEFT JOIN wms_user_role wur ON wr.id = wur.role_id
+            LEFT JOIN wms_user wu ON wu.id = wur.user_id
+            WHERE wu.id = #{userId}
+    </select>
+    <!--查詢所有角色-->
+    <select id="getById"
+            resultMap="RoleMap">
+       select * from wms_role where  id = #{id}
+    </select>
+    <!--添加角色-->
+    <insert id="save" parameterType="map">
+       insert into wms_role (
+       id,
+       name,
+       description,
+      creator,
+      create_person,
+      create_time,
+      editor,
+      modify_person,
+      modify_time
+       ) values (
+       #{id},
+       #{name},
+       #{description},
+       #{creator},
+       #{createPerson},
+       #{createTime},
+       #{editor},
+       #{modifyPerson},
+       #{modifyTime}
+       )
+    </insert>
+    <!--修改-->
+    <update id="update" parameterType="com.wms.user.service.bean.RoleBean">
+       update wms_role set
+       name = #{name},
+       description = #{description},
+       editor = #{editor},
+       modify_person =#{modifyPerson},
+       modify_time = #{modifyTime}
+       where
+       id = #{id}
+    </update>
+    <!--刪除-->
+    <delete id="delete" parameterType="com.wms.user.service.bean.RoleBean">
+      delete from wms_role where id = #{id}
+    </delete>
+</mapper>
